@@ -439,57 +439,57 @@ init_dec() {
 			echo "Layer $counter: BZip2"
 			decrypt_bzip2
 			PASSED_LOOP=1
-	    elif grep -q 'eval.*tr.*N-ZA-Mn-za-m' ./$filename.temp1.sh; then
-            counter=$((counter + 1))
-            echo "Layer $counter: ROT13"
-            decrypt_rot13
-            PASSED_LOOP=1
-       elif grep -q 'eval.*tr.*A-Za-z0-9' ./$filename.temp1.sh; then
-            counter=$((counter + 1))
-            echo "Layer $counter: ROT18"
-            decrypt_rot18
-            PASSED_LOOP=1
-        elif grep -q 'tr.*!-~.*P-~!' ./$filename.temp1.sh; then
-           counter=$((counter + 1))
-           echo "Layer $counter: ROT57"
-           decrypt_rot57
-           PASSED_LOOP=1
-       elif grep -q 'eval.*xxd.*r' ./$filename.temp1.sh; then
-           counter=$((counter + 1))
-           echo "Layer $counter: Hexadecimal"
-           remove_hex
-           PASSED_LOOP=1
-        elif grep -q 'rev' ./$filename.temp1.sh; then
-           counter=$((counter + 1))
-           echo "Layer $counter: Reverse"
-           decrypt_reverse
-           PASSED_LOOP=1
-        elif grep -q 'echo.*[0-7]\{3\}' ./$filename.temp1.sh; then
-            counter=$((counter + 1))
-            echo "Layer $counter: Octal"
-            decrypt_octal
-            PASSED_LOOP=1
-        elif grep -q 'echo.*[01]\{8\}' ./$filename.temp1.sh; then
-            counter=$((counter + 1))
-            echo "Layer $counter: Binary"
-            decrypt_binary
-            PASSED_LOOP=1
-		elif grep -q 'base64 -d | [a-z\/]*sh$' ./$filename.temp1.sh; then
+	                elif grep -q 'eval.*tr.*N-ZA-Mn-za-m' ./$filename.temp1.sh; then
+                        counter=$((counter + 1))
+                        echo "Layer $counter: ROT13"
+                        decrypt_rot13
+                        PASSED_LOOP=1
+               elif grep -q 'eval.*tr.*A-Za-z0-9' ./$filename.temp1.sh; then
+                        counter=$((counter + 1))
+                        echo "Layer $counter: ROT18"
+                        decrypt_rot18
+                        PASSED_LOOP=1
+               elif grep -q 'tr.*!-~.*P-~!' ./$filename.temp1.sh; then
+                        counter=$((counter + 1))
+                        echo "Layer $counter: ROT57"
+                        decrypt_rot57
+                        PASSED_LOOP=1
+               elif grep -q 'eval.*xxd.*r' ./$filename.temp1.sh; then
+                        counter=$((counter + 1))
+                        echo "Layer $counter: Hexadecimal"
+                        remove_hex
+                        PASSED_LOOP=1
+               elif grep -q 'rev' ./$filename.temp1.sh; then
+                        counter=$((counter + 1))
+                        echo "Layer $counter: Reverse"
+                        decrypt_reverse
+                        PASSED_LOOP=1
+              elif grep -q 'echo.*[0-7]\{3\}' ./$filename.temp1.sh; then
+                        counter=$((counter + 1))
+                        echo "Layer $counter: Octal"
+                        decrypt_octal
+                        PASSED_LOOP=1
+              elif grep -q 'echo.*[01]\{8\}' ./$filename.temp1.sh; then
+                        counter=$((counter + 1))
+                        echo "Layer $counter: Binary"
+                        decrypt_binary
+                        PASSED_LOOP=1
+	      elif grep -q 'base64 -d | [a-z\/]*sh$' ./$filename.temp1.sh; then
 			counter=$((counter + 1))
 			echo "Layer $counter: Base64"
 			decrypt_base64
 			PASSED_LOOP=1
-	    elif grep -qE '%[0-9A-Fa-f]{2}' "./$filename.temp1.sh"; then
-            counter=$((counter + 1))
-            echo "Layer $counter: URL Encoding"
-            decrypt_urlencode
-            PASSED_LOOP=1
-         elif grep -q 'eval.*tr.*!-~' ./$filename.temp1.sh; then
-            counter=$((counter + 1))
-            echo "Layer $counter: ROT47"
-            decrypt_rot47
-            PASSED_LOOP=1 
-		elif [ $(grep -c '^#' ./$filename.temp1.sh) -gt 180 ]; then
+	      elif grep -qE '%[0-9A-Fa-f]{2}' "./$filename.temp1.sh"; then
+                        counter=$((counter + 1))
+                        echo "Layer $counter: URL Encoding"
+                        decrypt_urlencode
+                        PASSED_LOOP=1
+              elif grep -q 'eval.*tr.*!-~' ./$filename.temp1.sh; then
+                        counter=$((counter + 1))
+                        echo "Layer $counter: ROT47"
+                        decrypt_rot47
+                        PASSED_LOOP=1 
+	      elif [ $(grep -c '^#' ./$filename.temp1.sh) -gt 180 ]; then
 			counter=$((counter + 1))
 			echo "Layer $counter: Extreme comment/editor EOF trick"
 			remove_comments
