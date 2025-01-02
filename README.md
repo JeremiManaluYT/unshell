@@ -66,14 +66,15 @@ The script is actually stored somewhere online (usually public GitHub pages, a s
 <details>
 <summary>Base64</summary>
 Not too crazy, just classic
-```sh
+`sh
 echo "ZWNobyBzb21lIGJhc2U2NCBlbmNyeXB0ZWQgc2hpdAo=" | base64 -d | sh
-```
+`
 </details>
 
 <details>
 <summary>Binary Encoding</summary>
-Binary encoding involves converting the script into binary (0s and 1s) format. This is usually done by encoding each character into its binary equivalent, making the script unreadable to the human eye. It can be executed with a simple shell script after conversion.Example:
+Binary encoding involves converting the script into binary (0s and 1s) format. This is usually done by encoding each character into its binary equivalent, making the script unreadable to the human eye. It can be executed with a simple shell script after conversion.
+  Example:
 `
 echo "01001000 01100101 01101100 01101100 01101111" | xxd -r -p | sh
 `
@@ -81,7 +82,8 @@ echo "01001000 01100101 01101100 01101100 01101111" | xxd -r -p | sh
 
 <details>
 <summary>URL Encoding</summary>
-URL encoding replaces special characters with percent-encoded characters. It is often used to obfuscate URLs but can also be used to obscure shell scripts. The encoded string must be decoded back to its original form for execution.Example:
+URL encoding replaces special characters with percent-encoded characters. It is often used to obfuscate URLs but can also be used to obscure shell scripts. The encoded string must be decoded back to its original form for execution.
+  Example:
 `
 echo "echo%20Hello%20World%21" | sed 's/%/\\x/g' | xargs -0 bash -c
 `
@@ -89,7 +91,8 @@ echo "echo%20Hello%20World%21" | sed 's/%/\\x/g' | xargs -0 bash -c
 
 <details>
 <summary>Reverse Encoding</summary>
-Reverse encoding simply reverses the string of the script. It can make the script hard to read but is easily reversible by reversing the string back.Example:
+Reverse encoding simply reverses the string of the script. It can make the script hard to read but is easily reversible by reversing the string back.
+  Example:
 `
 echo "dlrow olleh" | rev | sh
 `
@@ -97,7 +100,8 @@ echo "dlrow olleh" | rev | sh
 
 <details>
 <summary>Octal Encoding</summary>
-In octal encoding, each character is represented by its octal ASCII value. It can be used to hide the true nature of a script and may require decoding back into the original string.Example:
+In octal encoding, each character is represented by its octal ASCII value. It can be used to hide the true nature of a script and may require decoding back into the original string.
+  Example:
 `
 echo -e "\110\145\154\154\157" | sh
 `
@@ -105,7 +109,8 @@ echo -e "\110\145\154\154\157" | sh
 
 <details>
 <summary>Hexadecimal Encoding</summary>
-Hexadecimal encoding is a method of representing the shell script characters in hexadecimal format. This can make the script unreadable until it's converted back to its original form.Example:
+Hexadecimal encoding is a method of representing the shell script characters in hexadecimal format. This can make the script unreadable until it's converted back to its original form.
+  Example:
 `
 echo "68656c6c6f" | xxd -r -p | sh
 `
@@ -113,7 +118,8 @@ echo "68656c6c6f" | xxd -r -p | sh
 
 <details>
 <summary>ROT47 Encoding</summary>
-ROT47 is similar to ROT13, but it shifts the ASCII characters by 47 positions. It is used to obscure the text by shifting readable characters.Example:
+ROT47 is similar to ROT13, but it shifts the ASCII characters by 47 positions. It is used to obscure the text by shifting readable characters.
+  Example:
 `
 echo "U29tZSB0ZXh0" | tr 'A-Za-z0-9' 'P-ZA-Op-z0-9' | base64 -d
 `
@@ -121,7 +127,8 @@ echo "U29tZSB0ZXh0" | tr 'A-Za-z0-9' 'P-ZA-Op-z0-9' | base64 -d
 
 <details>
 <summary>ROT18 Encoding</summary>
-ROT18 is a variant of ROT13 that applies both ROT13 and ROT5 encoding. It shifts alphabetic characters by 13 positions and numeric characters by 5 positions.Example:
+ROT18 is a variant of ROT13 that applies both ROT13 and ROT5 encoding. It shifts alphabetic characters by 13 positions and numeric characters by 5 positions.
+  Example:
 `
 echo "12345" | tr '0-9' '5-9A-Ea-e' | tr 'A-Za-z' 'N-ZA-Mn-za-m'
 `
@@ -129,7 +136,8 @@ echo "12345" | tr '0-9' '5-9A-Ea-e' | tr 'A-Za-z' 'N-ZA-Mn-za-m'
 
 <details>
 <summary>ROT57 Encoding</summary>
-ROT57 is a more complex variant of ROT47 that shifts letters by 57 positions in the ASCII table, making the script harder to decode.Example:
+ROT57 is a more complex variant of ROT47 that shifts letters by 57 positions in the ASCII table, making the script harder to decode.
+  Example:
 `
 echo "TestMessage" | tr 'A-Za-z0-9' 'C-ZA-B1-9A-B' | base64 -d
 `
@@ -137,7 +145,8 @@ echo "TestMessage" | tr 'A-Za-z0-9' 'C-ZA-B1-9A-B' | base64 -d
 
 <details>
 <summary>ROT13 Encoding</summary>
-ROT13 shifts the alphabet by 13 positions. It’s often used in forums and newsgroups to obscure spoilers, puzzles, or simple ciphers.Example:
+ROT13 shifts the alphabet by 13 positions. It’s often used in forums and newsgroups to obscure spoilers, puzzles, or simple ciphers.
+  Example:
 `
 echo "Uryyb Jbeyq" | tr 'A-Za-z' 'N-ZA-Mn-za-m' | sh
 `
