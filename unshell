@@ -138,10 +138,9 @@ update_script() {
 		chmod +x "$which_is_unshell"
 		success "Updated successfully"
 		exit 0
-	else
+	
 		error "☹️ Failed to update"
 		exit 1
-	fi
 }
 
 # === Decrypt Methods ===
