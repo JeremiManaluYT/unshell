@@ -1,65 +1,153 @@
 #!/bin/env bash
 
+# === Set Unlimited Memory Stacks TO perform large amounts of Recursions ===
 ulimit -s unlimited >/dev/null 2>&1
 
-show_usage_unshell() {
-	printf "%s - Deobfuscate any shell scripts with multiple methods
-  Usage: %s [OPTIONS] [FILE]
-  Usage: %s [OPTIONS] [DIR]
-
-  Options:
-    -h, --help
-      print this message
-    -f, --file [FILE]
-      Scripts you wanted to deobfuscate, multi input is supported
-    -r, --recursive [DIR]
-      Recursively find and deobfuscate all files in the specified directory
-    -v, --verbose
-      Be verbose
-    -d, --execve-delay [SECOND]
-      Set custom execve delay time in seconds for SHC and SSC encryption
-    -U, --update
-      Update the script
-
-  Example usages:
-    %s -f install.sh menu.sh
-    %s -v -f /system/bin/gaming_script
-    %s -d 6.018 -f ./VTK
-    %s -r .
-    \n" "${0##*/}" "${0##*/}" "${0##*/}" "${0##*/}" "${0##*/}" "${0##*/}" "${0##*/}"
-	exit 0
+# === Function for color text output ===
+color_text() {
+  echo -e "\033[${1}m${2}\033[0m"
 }
 
+# === Function for loading animation that can be used with any command ===
+loading_animation() {
+  local message="$1"   # === Message to be displayed ===
+  local pid=$2         # === PID of the running process ===
+  local spinner=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
+  local i=0
+
+  # === Display animation while the process is running ===
+  while kill -0 $pid 2>/dev/null; do
+    printf "\r$(color_text "33" "$message") ${spinner[$i]}"
+    i=$(( (i + 1) % ${#spinner[@]} ))
+    sleep 0.1
+  done
+}
+
+# === Function to run a command with loading animation ===
+run_with_loading() {
+  local message="$1"
+  shift  # === Remove the first argument to get the command ===
+
+  # === Get PID of the background process ===
+  {
+    "$@"  # === Execute the command passed as arguments ===
+  } &
+
+  local pid=$!  # === Get the PID of the background process ===
+  
+  # === Call loading animation with the message and PID ===
+  loading_animation "$message" $pid
+
+  # === Wait for the background process to finish ===
+  wait $pid
+}
+
+# === Word Wrap for smaller screen ===
+word_wrap() {
+    character="45"
+    # Manually wrap the text at $character characters
+    while IFS= read -r line; do
+        # Split the line into chunks of $character characters and print each chunk
+        while [ ${#line} -gt $character ]; do
+            echo "${line:0:$character}"
+            line="${line:$character}"
+        done
+        # Print the remaining part of the line
+        echo "$line"
+    done <<< "$1"
+}
+
+# === Check for root mofules in folder ===
+folders=(
+  "/data/adb/modules"
+  "/data/adb/magisk"
+)
+
+# Iterate through each folder and check if it exists
+for folder in "${folders[@]}"; do
+  if [ -d "$folder" ]; then
+    warn "Root folder found in \"$folder\""
+    warn "Rooted device detected."
+    word_wrap "Using unshell to retrieve the original shell script from SHC, SSC, or Ri-crypt obfuscation could potentially harm your machine, these obfuscation type requires to executing the script to order to deobfuscate thus leave your machine in danger if script does something malicious. Avoid running unshell with root permissions unless you fully trust the script!"
+    exit 1
+  fi
+done
+
+# === Define Color Codes Variables ===
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+RESET='\033[0m'
+
+# === Handling Functions: ===
+       # == Error Function ===
+error() {
+    echo -e "${RED}❌ ERROR: $1${RESET}"
+    exit 1
+}
+
+# === Success Function ===
+success() {
+    echo -e "${GREEN}✅ SUCCESS: $1${RESET}"
+}
+
+# === Warning Function ===
+warn() {
+    echo -e "${YELLOW}⚠️ WARNING: $1${RESET}"
+}
+
+# === Usage Messages ===
+show_usage() {
+    printf "%s - Deobfuscate shell scripts using multiple methods and layers for FREE!\n" "${0##*/}"
+    printf "Usage: %s [OPTIONS] [FILE]\n" "${0##*/}"
+    printf "Usage: %s [OPTIONS] [DIR]\n\n" "${0##*/}"
+    printf "Options:\n"
+    printf "  -h, --help                 Show this message\n"
+    printf "  -f, --file [FILE]          Specify script(s) to deobfuscate (supports multiple inputs)\n"
+    printf "  -r, --recursive [DIR]      Recursively find and deobfuscate shells in the specified directory\n"
+    printf "  -v, --verbose              Enable verbose mode (for debugging or troubleshooting) \n"
+    printf "  -d, --execve-delay [SECONDS] Set a custom execve delay in seconds (for SHC/SSC encryption)\n"
+    printf "  -U, --update               Update the script\n\n"
+    printf "Examples:\n"
+    printf "  %s -f install.sh menu.sh uninstall.sh\n" "${0##*/}"
+    printf "  %s -v -f /system/bin/gaming_script.sh\n" "${0##*/}"
+    printf "  %s -d 6.018 -f ./VTK\n" "${0##*/}"
+    printf "  %s -r .\n" "${0##*/}"
+    printf "\nTelegram Dev: @Rem01Gaming\n"
+    exit 0
+}
+
+# === Update Script ===
 update_script() {
 	temp="$HOME/unshell.temp"
 	which_is_unshell=$(which unshell)
-
+   
 	if [ -z "$which_is_unshell" ]; then
-		echo "'which' is not installed, please install it!"
+		error "'which' is not installed ❌, please install it!"
 		exit 1
 	fi
 
-	# Download the latest version
-	if ! curl -Lo "$temp" https://github.com/Rem01Gaming/unshell/raw/main/unshell; then
+	# === Download the latest version ===
+	if ! curl -Lo "$temp" https://github.com/JeremiManaluYT/unshell/raw/main/unshell; then
 		rm -f "$temp"
-		echo "error: failed to download update script"
+		error "☹️ Failed to download update script"
 		exit 1
 	fi
 
-	# Ensure the current binary is removed only after successful download
-	if rm -f "$which_is_unshell" && mv "$temp" "$which_is_unshell"; then
+	# === Update the script if download is success or fail ===
 		chmod +x "$which_is_unshell"
-		echo "Updated successfully"
+		success "Updated successfully"
 		exit 0
 	else
-		echo "error: failed to update"
+		error "☹️ Failed to update"
 		exit 1
 	fi
 }
 
+# === Decrypt Methods ===
 remove_comments() {
 	if ! hash shfmt; then
-		echo "error: environment has missing dependencies"
+		error "environment has missing dependencies (please install shfmt) "
 		return 127
 	fi
 	shfmt -mn ./$filename.temp1.sh >./$filename.temp2.sh
@@ -68,7 +156,7 @@ remove_comments() {
 
 decrypt_ricrypt() {
 	if ! hash strace; then
-		echo "error: environment has missing dependencies"
+		error "environment has missing dependencies (please install strace) "
 		return 127
 	fi
 	spath=$(echo $PATH | cut -d: -f1)
@@ -166,6 +254,17 @@ decrypt_shc() {
 	fi
 }
 
+remove_hex() {
+    if ! hash xxd; then
+        error "environment has missing dependencies (please insta xxd)" 
+    return 127
+    fi
+    
+    sed 's/eval "\$/echo "\$/g' ./$filename.temp1.sh >./$filename.temp2.sh
+    bash ./$filename.temp2.sh | xxd -r -p >./$filename.temp1.sh
+    rm ./$filename.temp2.sh
+}
+
 decrypt_bashrock() {
 	sed 's/eval "$x";/echo "$x";/g' ./$filename.temp1.sh >./$filename.temp2.sh
 	bash ./$filename.temp2.sh >./$filename.temp1.sh
@@ -183,10 +282,20 @@ decrypt_bashobsf() {
 	bash ./$filename.temp2.sh >./$filename.temp1.sh
 	rm ./$filename.temp2.sh
 }
-
+decrypt_rot47() {
+    sed 's/eval "\$/echo "\$/g' ./$filename.temp1.sh > ./$filename.temp2.sh
+    bash ./$filename.temp2.sh | tr 'A-Za-z0-9' 'P-ZA-O0-9' > ./$filename.temp1.sh
+    rm ./$filename.temp2.sh
+}
+decrypt_urlencode() {
+    # Replace eval with echo for safer execution
+    sed 's/eval "\$/echo "\$/g' "./$filename.temp1.sh" > ./$filename.temp2.sh
+    bash "./$filename.temp2.sh" | sed -E 's/%([0-9A-Fa-f]{2})/\\x\1/g' | xargs -0 printf "%b" > ./$filename.temp1.sh
+    rm ./$filename.temp2.sh
+}
 decrypt_tpp() {
 	if ! hash shfmt; then
-		echo "error: environment has missing dependencies"
+		error "environment has missing dependencies (please install shfmt) "
 		return 127
 	fi
 	shfmt -mn -w ./$filename.temp1.sh
@@ -197,10 +306,22 @@ decrypt_tpp() {
 	rm ./$filename.temp2.sh
 }
 
+decrypt_rot13() {
+    sed 's/eval "\$/echo "\$/g' ./$filename.temp1.sh >./$filename.temp2.sh
+    bash ./$filename.temp2.sh | tr 'A-Za-z' 'N-ZA-Mn-za-m' >./$filename.temp1.sh
+    rm ./$filename.temp2.sh
+}
+
 decrypt_base64() {
 	sed 's/base64 -d | [a-z\/]*sh/base64 -d/; s/\[ "$(id -u)" -ne 2000 \]/! true/' ./$filename.temp1.sh >./$filename.temp2.sh
 	bash ./$filename.temp2.sh >./$filename.temp1.sh
 	rm ./$filename.temp2.sh
+}
+
+decrypt_rot57() {
+    sed 's/eval "\$/echo "\$/g' ./$filename.temp1.sh > ./$filename.temp2.sh
+    bash ./$filename.temp2.sh | tr '!-~' 'P-~!A-O' > ./$filename.temp1.sh
+    rm ./$filename.temp2.sh
 }
 
 decrypt_bzip2() {
@@ -208,6 +329,41 @@ decrypt_bzip2() {
 	sed 1,${skip}d ./$filename.temp1.sh >./$filename.temp2.sh
 	bzip2 -cd ./$filename.temp2.sh >./$filename.temp1.sh
 	rm ./$filename.temp2.sh
+}
+
+decrypt_reverse() {
+    sed 's/eval "\$/echo "\$/g' ./$filename.temp1.sh >./$filename.temp2.sh
+    bash ./$filename.temp2.sh | rev >./$filename.temp1.sh
+    rm ./$filename.temp2.sh
+}
+
+decrypt_rot18() {
+    sed 's/eval "\$/echo "\$/g' ./$filename.temp1.sh >./$filename.temp2.sh
+    bash ./$filename.temp2.sh | tr 'A-Za-z0-9' 'I-ZA-Hi-zA-H9-0' > ./$filename.temp1.sh
+    rm ./$filename.temp2.sh
+}
+
+decrypt_octal() {
+    sed 's/eval "\$/echo "\$/g' ./$filename.temp1.sh >./$filename.temp2.sh
+    bash ./$filename.temp2.sh | awk '{for(i=1;i<=NF;i++)printf("%c",strtonum("0"$i));printf("\n")}' >./$filename.temp1.sh
+    rm ./$filename.temp2.sh
+}
+
+decrypt_binary() {
+     if ! hash perl; then
+     error "environment has missing dependencies (please install perl)" 
+    return 127
+    fi 
+    
+    sed 's/eval "\$/echo "\$/g' ./$filename.temp1.sh >./$filename.temp2.sh
+    bash ./$filename.temp2.sh | perl -lpe '$_=pack"B*",$_' >./$filename.temp1.sh
+    rm ./$filename.temp2.sh
+}
+
+decrypt_hexadecimal() {
+    sed 's/eval "\$/echo "\$/g' ./$filename.temp1.sh >./$filename.temp2.sh
+    bash ./$filename.temp2.sh | xxd -r -p >./$filename.temp1.sh
+    rm ./$filename.temp2.sh
 }
 
 decrypt_axeron() {
@@ -234,7 +390,7 @@ EOF
 	rm $REP_FUNCTION
 	curl -Lo ./$filename.temp1.sh $obsf_link
 	# Don't use '||' here, just don't
-	[ $? -gt 0 ] && rm ./$filename.temp1.sh && echo "error: unable to download axeron script." && return 1
+	[ $? -gt 0 ] && rm ./$filename.temp1.sh && error "unable to download axeron script." && return 1
 }
 
 decrypt_eval_base64() {
@@ -243,6 +399,7 @@ decrypt_eval_base64() {
 	rm ./$filename.temp2.sh
 }
 
+# === Decrypt Layers Detector ===
 init_dec() {
 	[ $VERBOSE -eq 1 ] && set -x
 	while true; do
@@ -263,7 +420,7 @@ init_dec() {
 			echo "Layer $counter: bash-obfuscate"
 			decrypt_bashobsf
 			PASSED_LOOP=1
-		elif grep -q 'dec_.*=$(echo\s"$enc"' ./$filename.temp1.sh && ! grep -q 'while\sread' ./$filename.temp1.sh; then
+		elif grep -q 'dec_*=$(echo\s"$enc"' ./$filename.temp1.sh && ! grep -q 'while\sread' ./$filename.temp1.sh; then
 			counter=$((counter + 1))
 			echo "Layer $counter: TPP Tool"
 			decrypt_tpp
@@ -275,19 +432,64 @@ init_dec() {
 			PASSED_LOOP=1
 		elif grep -q 'storm\s-x' ./$filename.temp1.sh; then
 			counter=$((counter + 1))
-			echo "Layer $counter: Axeron online module"
+			echo "Layer $counter: Axeron online modules"
 			decrypt_axeron
 			PASSED_LOOP=1
 		elif grep -q '/bin/bzip2\s-cd' ./$filename.temp1.sh && grep -q 'skip=23' ./$filename.temp1.sh; then
 			counter=$((counter + 1))
-			echo "Layer $counter: bzip2"
+			echo "Layer $counter: BZip2"
 			decrypt_bzip2
 			PASSED_LOOP=1
+	    elif grep -q 'eval.*tr.*N-ZA-Mn-za-m' ./$filename.temp1.sh; then
+            counter=$((counter + 1))
+            echo "Layer $counter: ROT13"
+            decrypt_rot13
+            PASSED_LOOP=1
+       elif grep -q 'eval.*tr.*A-Za-z0-9' ./$filename.temp1.sh; then
+            counter=$((counter + 1))
+            echo "Layer $counter: ROT18"
+            decrypt_rot18
+            PASSED_LOOP=1
+        elif grep -q 'tr.*!-~.*P-~!' ./$filename.temp1.sh; then
+           counter=$((counter + 1))
+           echo "Layer $counter: ROT57"
+           decrypt_rot57
+           PASSED_LOOP=1
+       elif grep -q 'eval.*xxd.*r' ./$filename.temp1.sh; then
+           counter=$((counter + 1))
+           echo "Layer $counter: Hexadecimal"
+           remove_hex
+           PASSED_LOOP=1
+        elif grep -q 'rev' ./$filename.temp1.sh; then
+           counter=$((counter + 1))
+           echo "Layer $counter: Reverse"
+           decrypt_reverse
+           PASSED_LOOP=1
+        elif grep -q 'echo.*[0-7]\{3\}' ./$filename.temp1.sh; then
+            counter=$((counter + 1))
+            echo "Layer $counter: Octal"
+            decrypt_octal
+            PASSED_LOOP=1
+        elif grep -q 'echo.*[01]\{8\}' ./$filename.temp1.sh; then
+            counter=$((counter + 1))
+            echo "Layer $counter: Binary"
+            decrypt_binary
+            PASSED_LOOP=1
 		elif grep -q 'base64 -d | [a-z\/]*sh$' ./$filename.temp1.sh; then
 			counter=$((counter + 1))
-			echo "Layer $counter: base64"
+			echo "Layer $counter: Base64"
 			decrypt_base64
 			PASSED_LOOP=1
+	    elif grep -qE '%[0-9A-Fa-f]{2}' "./$filename.temp1.sh"; then
+            counter=$((counter + 1))
+            echo "Layer $counter: URL Encoding"
+            decrypt_urlencode
+            PASSED_LOOP=1
+         elif grep -q 'eval.*tr.*!-~' ./$filename.temp1.sh; then
+            counter=$((counter + 1))
+            echo "Layer $counter: ROT47"
+            decrypt_rot47
+            PASSED_LOOP=1 
 		elif [ $(grep -c '^#' ./$filename.temp1.sh) -gt 180 ]; then
 			counter=$((counter + 1))
 			echo "Layer $counter: Extreme comment/editor EOF trick"
@@ -295,72 +497,80 @@ init_dec() {
 			PASSED_LOOP=1
 		elif strings ./$filename.temp1.sh | grep -q 'SSC_ARGV0'; then
 			counter=$((counter + 1))
-			echo "Layer $counter: ssc"
+			echo "Layer $counter: SSC"
 			decrypt_ssc
 			PASSED_LOOP=1
 		elif strings ./$filename.temp1.sh | grep -q 'E:\sneither\sargv\[0\]\snor\s\$_\sworks\.'; then
 			counter=$((counter + 1))
-			echo "Layer $counter: shc"
+			echo "Layer $counter: SHC"
 			decrypt_shc
 			PASSED_LOOP=1
-		elif strings ./$filename.temp1.sh | grep -q 'sh-cFailed'; then
+		elif strings ./$filename.temp1.sh | grep -q 'sh-c☹️ Failed'; then
 			counter=$((counter + 1))
 			echo "Layer $counter: Ri-crypt"
 			decrypt_ricrypt
 			PASSED_LOOP=1
 		else
-			[ $PASSED_LOOP -eq 0 ] && rm ./$filename.temp1.sh && echo "error: uknown patterns, deobfuscation is not supported."
+			[ $PASSED_LOOP -eq 0 ] && rm ./$filename.temp1.sh && error "uknown patterns, deobfuscation is not supported."
 			break
 		fi
 	done
 
+    # === Check if the obfuscate failed ===
 	if [ ! -s ./$filename.temp1.sh ]; then
 		[ $VERBOSE -eq 1 ] && set +x
-		echo "Failed to deobfuscate $1"
+		echo "☹️ Failed to deobfuscate $1"
 		remove_temp
 		return 1
 	fi
-
+ 
+    # === Check if the file obfuscate successfully ===
 	[ $VERBOSE -eq 1 ] && set +x
 	mv ./$filename.temp1.sh ./$filename.dec.sh
-	echo "./$filename.dec.sh unshelled"
+	success "./$filename.dec.sh unshelled ✅"
 	remove_temp
 }
 
+# === Function to clean up previous temporary decryptions ===
 remove_temp() {
 	rm -f ./$filename.temp*.sh
 	counter=0
 }
 
+# === Function to process individual files ===
 process_files() {
 	for file in "$@"; do
 		if [ ! -f "$file" ]; then
-			echo "error: file $file does not exist!"
+			error "file $file does not exist!"
 		else
 			PASSED_LOOP=0
 			filename=$(basename "$file")
 			cp "$file" "./$filename.temp1.sh"
-			echo "Deobfuscating $file → ./$filename.dec.sh"
+			run_with_loading "Deobfuscating $file → ./$filename.dec.sh... " sleep 3
 			init_dec "$file"
 		fi
 	done
 }
 
+# === Function to process files recursively ===
 process_recursive() {
 	find "$1" -maxdepth 1 -type f | while IFS= read -r file; do
 		process_files "$file"
 	done
 }
 
+# === Check if Strings and Curl Installed ===
 if ! hash strings curl; then
-	echo "error: environment has missing dependencies"
+	error "environment has missing dependencies (please install curl) "
 	exit 1
 fi
 
+# === Default Variables ===
 RECURSIVE=0
 FILES=0
 VERBOSE=0
 
+# === Options ===
 while [[ $# -gt 0 ]]; do
 	case $1 in
 	-h | --help)
@@ -376,7 +586,7 @@ while [[ $# -gt 0 ]]; do
 		if [[ $1 =~ ^[0-9]+(\.[0-9]+)?$ ]]; then
 			EXECVE_DELAY=$1
 		else
-			echo -e "error: execve delay MUST be a positive integer or decimal number!\nFor help, type: 'unshell --help'."
+			error "execve delay MUST be a positive integer or decimal number!\nFor help, type: 'unshell --help'."
 			exit 1
 		fi
 		shift
@@ -396,32 +606,35 @@ while [[ $# -gt 0 ]]; do
 		break
 		;;
 	-*)
-		echo -e "error: bad option\nFor help, type: 'unshell --help'."
+		error "bad option\nFor help, type: 'unshell --help'."
 		exit 1
 		;;
 	*) shift ;;
 	esac
 done
 
+# === Check for required arguments ===
 if [[ "$RECURSIVE" -eq 1 && "$FILES" -eq 1 ]]; then
-	echo -e "error: -r and -f option cannot coexist!\nFor help, type: 'unshell --help'."
+	error "-r and -f option cannot coexist!\nFor help, type: 'unshell --help'."
 	exit 1
 elif [[ "$RECURSIVE" -eq 0 && "$FILES" -eq 0 ]]; then
-	echo -e "error: the following arguments are required: -f, --file or -r, --recursive\nFor help, type: 'unshell --help'."
+	error "the following arguments are required: -f, --file or -r, --recursive\nFor help, type: 'unshell --help'."
 	exit 1
 fi
 
+# === Check if a file or directory exist  ===
 if [ -z "$1" ]; then
-	echo -e "error: no input file or directory\nFor help, type: 'unshell --help'."
+	error "no input file or directory\nFor help, type: 'unshell --help'."
 	exit 1
 fi
 
+# === Process Directories ===
 if [ "$RECURSIVE" -eq 1 ]; then
 	for dir in "$@"; do
 		if [ -d "$dir" ]; then
 			process_recursive "$dir"
 		else
-			echo "error: $dir is not a directory!"
+			error "$dir is not a directory!"
 		fi
 	done
 else
