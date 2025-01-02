@@ -169,7 +169,7 @@ unshell - Deobfuscate any shell scripts with multiple methods
     -h, --help
       Show this message
     -f, --file [FILE]
-      Specify script(s) to deobfuscate (supports multiple inputs)d
+      Specify script(s) to deobfuscate (supports multiple inputs)
     -r, --recursive [DIR]
       Recursively find and deobfuscate shells in the specified directory
     -v, --verbose
