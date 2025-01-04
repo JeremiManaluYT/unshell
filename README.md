@@ -99,15 +99,6 @@ echo "dlrow olleh" | rev | sh
 </details>
 
 <details>
-<summary>Octal Encoding</summary>
-In octal encoding, each character is represented by its octal ASCII value. It can be used to hide the true nature of a script and may require decoding back into the original string.
-  Example:
-`
-echo -e "\110\145\154\154\157" | sh
-`
-</details>
-
-<details>
 <summary>Hexadecimal Encoding</summary>
 Hexadecimal encoding is a method of representing the shell script characters in hexadecimal format. This can make the script unreadable until it's converted back to its original form.
   Example:
