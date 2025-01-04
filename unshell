@@ -69,7 +69,19 @@ for folder in "${folders[@]}"; do
     warn "Root folder found in \"$folder\""
     warn "Rooted device detected."
     word_wrap "Using unshell to retrieve the original shell script from SHC, SSC, or Ri-crypt obfuscation could potentially harm your machine, these obfuscation type requires to executing the script to order to deobfuscate thus leave your machine in danger if script does something malicious. Avoid running unshell with root permissions unless you fully trust the script!"
+    # Prompt the user for input
+    echo -n "Do you want to continue? (y/n): "
+    read answer
+
+# Check the user's input
+if [[ "$answer" == "y" || "$answer" == "Y" ]]; then
+    echo "Continuing..."
+elif [[ "$answer" == "n" || "$answer" == "N" ]]; then
+    echo "Exiting..."
     exit 1
+else
+    echo "Invalid input, please enter y or n."
+fi
   fi
 done
 
@@ -253,7 +265,7 @@ decrypt_shc() {
 	fi
 }
 
-remove_hex() {
+decrypt_hex() {
     if ! hash xxd; then
         error "environment has missing dependencies (please insta xxd)" 
     return 127
@@ -342,12 +354,6 @@ decrypt_rot18() {
     rm ./$filename.temp2.sh
 }
 
-decrypt_octal() {
-    sed 's/eval "\$/echo "\$/g' ./$filename.temp1.sh >./$filename.temp2.sh
-    bash ./$filename.temp2.sh | awk '{for(i=1;i<=NF;i++)printf("%c",strtonum("0"$i));printf("\n")}' >./$filename.temp1.sh
-    rm ./$filename.temp2.sh
-}
-
 decrypt_binary() {
      if ! hash perl; then
      error "environment has missing dependencies (please install perl)" 
@@ -356,12 +362,6 @@ decrypt_binary() {
     
     sed 's/eval "\$/echo "\$/g' ./$filename.temp1.sh >./$filename.temp2.sh
     bash ./$filename.temp2.sh | perl -lpe '$_=pack"B*",$_' >./$filename.temp1.sh
-    rm ./$filename.temp2.sh
-}
-
-decrypt_hexadecimal() {
-    sed 's/eval "\$/echo "\$/g' ./$filename.temp1.sh >./$filename.temp2.sh
-    bash ./$filename.temp2.sh | xxd -r -p >./$filename.temp1.sh
     rm ./$filename.temp2.sh
 }
 
@@ -385,7 +385,7 @@ EOF
 	sed "s|source \$FUNCTION|source $REP_FUNCTION|; s/\[ \"\$(id -u)\" -ne 2000 \]/! true/" ./$filename.temp1.sh >./$filename.temp2.sh
 	obsf_link=$(bash ./$filename.temp2.sh)
 	echo "Obfuscated link: $obsf_link"
-	echo "Downloading script..."
+	run_with_loading "Downloading script..." sleep 3
 	rm $REP_FUNCTION
 	curl -Lo ./$filename.temp1.sh $obsf_link
 	# Don't use '||' here, just don't
@@ -406,12 +406,12 @@ init_dec() {
 			break
 		elif grep -q '$RzE' ./$filename.temp1.sh; then
 			counter=$((counter + 1))
-			echo "Layer $counter: bashrock"
+			echo "Layer $counter: BashRock"
 			decrypt_bashrock
 			PASSED_LOOP=1
 		elif grep -q 'Tx=Eds' ./$filename.temp1.sh; then
 			counter=$((counter + 1))
-			echo "Layer $counter: bashprotector"
+			echo "Layer $counter: BashProtector"
 			decrypt_bashprotector
 			PASSED_LOOP=1
 		elif grep -q 'z=.*;.*z=.*;' ./$filename.temp1.sh; then
@@ -439,57 +439,52 @@ init_dec() {
 			echo "Layer $counter: BZip2"
 			decrypt_bzip2
 			PASSED_LOOP=1
-	                elif grep -q 'eval.*tr.*N-ZA-Mn-za-m' ./$filename.temp1.sh; then
-                        counter=$((counter + 1))
-                        echo "Layer $counter: ROT13"
-                        decrypt_rot13
-                        PASSED_LOOP=1
-               elif grep -q 'eval.*tr.*A-Za-z0-9' ./$filename.temp1.sh; then
-                        counter=$((counter + 1))
-                        echo "Layer $counter: ROT18"
-                        decrypt_rot18
-                        PASSED_LOOP=1
-               elif grep -q 'tr.*!-~.*P-~!' ./$filename.temp1.sh; then
-                        counter=$((counter + 1))
-                        echo "Layer $counter: ROT57"
-                        decrypt_rot57
-                        PASSED_LOOP=1
-               elif grep -q 'eval.*xxd.*r' ./$filename.temp1.sh; then
-                        counter=$((counter + 1))
-                        echo "Layer $counter: Hexadecimal"
-                        remove_hex
-                        PASSED_LOOP=1
-               elif grep -q 'rev' ./$filename.temp1.sh; then
-                        counter=$((counter + 1))
-                        echo "Layer $counter: Reverse"
-                        decrypt_reverse
-                        PASSED_LOOP=1
-              elif grep -q 'echo.*[0-7]\{3\}' ./$filename.temp1.sh; then
-                        counter=$((counter + 1))
-                        echo "Layer $counter: Octal"
-                        decrypt_octal
-                        PASSED_LOOP=1
-              elif grep -q 'echo.*[01]\{8\}' ./$filename.temp1.sh; then
-                        counter=$((counter + 1))
-                        echo "Layer $counter: Binary"
-                        decrypt_binary
-                        PASSED_LOOP=1
-	      elif grep -q 'base64 -d | [a-z\/]*sh$' ./$filename.temp1.sh; then
+	    elif grep -q 'eval.*tr.*N-ZA-Mn-za-m' ./$filename.temp1.sh; then
+            counter=$((counter + 1))
+            echo "Layer $counter: ROT13"
+            decrypt_rot13
+            PASSED_LOOP=1
+       elif grep -q 'eval.*tr.*A-Za-z0-9' ./$filename.temp1.sh; then
+            counter=$((counter + 1))
+            echo "Layer $counter: ROT18"
+            decrypt_rot18
+            PASSED_LOOP=1
+        elif grep -q 'tr.*!-~.*P-~!' ./$filename.temp1.sh; then
+           counter=$((counter + 1))
+           echo "Layer $counter: ROT57"
+           decrypt_rot57
+           PASSED_LOOP=1
+       elif grep -q 'eval.*xxd.* ./$filename.temp1.sh; then
+           counter=$((counter + 1))
+           echo "Layer $counter: Hexadecimal"
+           remove_hex
+           PASSED_LOOP=1
+        elif grep -q 'rev' ./$filename.temp1.sh; then
+           counter=$((counter + 1))
+           echo "Layer $counter: Reverse"
+           decrypt_reverse
+           PASSED_LOOP=1
+        elif grep -q 'echo.*[01]\{8\}' ./$filename.temp1.sh; then
+            counter=$((counter + 1))
+            echo "Layer $counter: Binary"
+            decrypt_binary
+            PASSED_LOOP=1
+		elif grep -q 'base64 -d | [a-z\/]*sh$' ./$filename.temp1.sh; then
 			counter=$((counter + 1))
 			echo "Layer $counter: Base64"
 			decrypt_base64
 			PASSED_LOOP=1
-	      elif grep -qE '%[0-9A-Fa-f]{2}' "./$filename.temp1.sh"; then
-                        counter=$((counter + 1))
-                        echo "Layer $counter: URL Encoding"
-                        decrypt_urlencode
-                        PASSED_LOOP=1
-              elif grep -q 'eval.*tr.*!-~' ./$filename.temp1.sh; then
-                        counter=$((counter + 1))
-                        echo "Layer $counter: ROT47"
-                        decrypt_rot47
-                        PASSED_LOOP=1 
-	      elif [ $(grep -c '^#' ./$filename.temp1.sh) -gt 180 ]; then
+	    elif grep -qE '%[0-9A-Fa-f]{2}' "./$filename.temp1.sh"; then
+            counter=$((counter + 1))
+            echo "Layer $counter: URL Encoding"
+            decrypt_urlencode
+            PASSED_LOOP=1
+         elif grep -q 'eval.*tr.*!-~' ./$filename.temp1.sh; then
+            counter=$((counter + 1))
+            echo "Layer $counter: ROT47"
+            decrypt_rot47
+            PASSED_LOOP=1 
+		elif [ $(grep -c '^#' ./$filename.temp1.sh) -gt 180 ]; then
 			counter=$((counter + 1))
 			echo "Layer $counter: Extreme comment/editor EOF trick"
 			remove_comments
@@ -518,16 +513,18 @@ init_dec() {
     # === Check if the obfuscate failed ===
 	if [ ! -s ./$filename.temp1.sh ]; then
 		[ $VERBOSE -eq 1 ] && set +x
-		echo "☹️ Failed to deobfuscate $1"
+		error "☹️ Failed to deobfuscate $1"
 		remove_temp
 		return 1
 	fi
  
-    # === Check if the file obfuscate successfully ===
-	[ $VERBOSE -eq 1 ] && set +x
+    # === Check if verbose is activated or equals 1 ===
+	if [ $VERBOSE -eq 1 ]; then
+    set +x
 	mv ./$filename.temp1.sh ./$filename.dec.sh
 	success "./$filename.dec.sh unshelled ✅"
 	remove_temp
+	fi
 }
 
 # === Function to clean up previous temporary decryptions ===
