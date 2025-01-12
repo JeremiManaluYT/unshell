@@ -649,7 +649,8 @@ fi
 
 # === Check if a file or directory exist  ===
 if [ -z "$1" ]; then
-	error "no input file or directory\nFor help, type: 'unshell --help'."
+	error "no input file or directory !
+    For help, type: unshell --help."
 	exit 1
 fi
 
