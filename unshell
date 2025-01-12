@@ -611,7 +611,7 @@ while [[ $# -gt 0 ]]; do
 		if [[ $1 =~ ^[0-9]+(\.[0-9]+)?$ ]]; then
 			EXECVE_DELAY=$1
 		else
-			error "execve delay MUST be a positive integer or decimal number!\nFor help, type: 'unshell --help'."
+			error "execve delay MUST be a positive integer or decimal number!\nFor help, type: unshell --help."
 			exit 1
 		fi
 		shift
@@ -631,7 +631,7 @@ while [[ $# -gt 0 ]]; do
 		break
 		;;
 	-*)
-		error "bad option\nFor help, type: 'unshell --help'."
+		error "bad option\nFor help, type: unshell --help."
 		exit 1
 		;;
 	*) shift ;;
@@ -640,10 +640,10 @@ done
 
 # === Check for required arguments ===
 if [[ "$RECURSIVE" -eq 1 && "$FILES" -eq 1 ]]; then
-	error "-r and -f option cannot coexist!\nFor help, type: 'unshell --help'."
+	error "-r and -f option cannot coexist!\nFor help, type: unshell --help."
 	exit 1
 elif [[ "$RECURSIVE" -eq 0 && "$FILES" -eq 0 ]]; then
-	error "the following arguments are required: -f, --file or -r, --recursive\nFor help, type: 'unshell --help'."
+	error "the following arguments are required: -f, --file or -r, --recursive\nFor help, type: unshell --help."
 	exit 1
 fi
 
