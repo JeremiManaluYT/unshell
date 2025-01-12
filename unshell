@@ -63,7 +63,7 @@ folders=(
   "/data/adb/magisk"
 )
 
-# Iterate through each folder and check if it exists
+# === Iterate through each folder and check if it exists ===
 for folder in "${folders[@]}"; do
   if [ -d "$folder" ]; then
     warn "Root folder found in \"$folder\""
@@ -73,7 +73,7 @@ for folder in "${folders[@]}"; do
     echo -n "Do you want to continue? (y/n): "
     read answer
 
-# Check the user's input
+# === Check the user's input ===
 if [[ "$answer" == "y" || "$answer" == "Y" ]]; then
     echo "Continuing..."
 elif [[ "$answer" == "n" || "$answer" == "N" ]]; then
@@ -398,6 +398,18 @@ decrypt_eval_base64() {
 	rm ./$filename.temp2.sh
 }
 
+decrypt_b64eval() {
+	sed 's/eval "\$/echo "\$/g; s/\[ "$(id -u)" -ne 2000 \]/! true/' "./$filename.temp1.sh" >"./$filename.temp2.sh"
+	bash "./$filename.temp2.sh" >"./$filename.temp1.sh"
+	rm "./$filename.temp2.sh"
+}
+
+decrypt_eval() {
+	sed 's/eval "\$/echo "\$/g; s/\[ "$(id -u)" -ne 2000 \]/! true/' "./$filename.temp1.sh" >"./$filename.temp2.sh"
+    bash "./$filename.temp2.sh" >"./$filename.temp1.sh"
+	rm "./$filename.temp2.sh"
+}	
+
 # === Decrypt Layers Detector ===
 init_dec() {
 	[ $VERBOSE -eq 1 ] && set -x
@@ -489,6 +501,17 @@ init_dec() {
 			echo "Layer $counter: Extreme comment/editor EOF trick"
 			remove_comments
 			PASSED_LOOP=1
+			COMMENTS=true
+	    elif grep -q '| base64 -d' "./$filename.temp1.sh"; then
+			counter=$((counter + 1))
+			echo "Layer $counter: Base64Eval" 
+			decrypt_b64eval
+			PASSED_LOOP=1
+		elif grep -q '=.*;.*=.*;' "./$filename.temp1.sh"; then
+			counter=$((counter + 1))
+	        echo "Layer $counter: Eval"
+	        decrypt_eval
+			PASSED_LOOP=1
 		elif strings ./$filename.temp1.sh | grep -q 'SSC_ARGV0'; then
 			counter=$((counter + 1))
 			echo "Layer $counter: SSC"
@@ -499,7 +522,7 @@ init_dec() {
 			echo "Layer $counter: SHC"
 			decrypt_shc
 			PASSED_LOOP=1
-		elif strings ./$filename.temp1.sh | grep -q 'sh-c☹️ Failed'; then
+		elif strings ./$filename.temp1.sh | grep -q 'sh-c Failed'; then
 			counter=$((counter + 1))
 			echo "Layer $counter: Ri-crypt"
 			decrypt_ricrypt
@@ -559,6 +582,12 @@ process_recursive() {
 if ! hash strings curl; then
 	error "environment has missing dependencies (please install curl) "
 	exit 1
+fi
+
+# === Check if comments equals true ===
+if [ "$COMMENTS" = true ]; then
+	echo " Warning: Decryption Extreme comment/editor EOF trick mode used. Some code comments may be lost."
+	echo ""
 fi
 
 # === Default Variables ===
