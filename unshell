@@ -522,7 +522,7 @@ init_dec() {
 			echo "Layer $counter: SHC"
 			decrypt_shc
 			PASSED_LOOP=1
-		elif strings ./$filename.temp1.sh | grep -q 'sh-c Failed'; then
+		elif strings ./$filename.temp1.sh | grep -q 'sh-cFailed'; then
 			counter=$((counter + 1))
 			echo "Layer $counter: Ri-crypt"
 			decrypt_ricrypt
