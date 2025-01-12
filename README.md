@@ -1,6 +1,6 @@
 ![unshell_hero](./unshell-banner.png)
 # Unshell
-> The Script Kiddies Nightmare 👻
+> The Script Kiddies Nightmare ðŸ‘»
 
 Effortlessly deobfuscate shell scripts back into source code even with heavenly and multi layered obfuscation. unshell will search for patterns on shell script, determine and deobfuscate accordingly.
 
@@ -136,11 +136,37 @@ echo "TestMessage" | tr 'A-Za-z0-9' 'C-ZA-B1-9A-B' | base64 -d
 
 <details>
 <summary>ROT13 Encoding</summary>
-ROT13 shifts the alphabet by 13 positions. It’s often used in forums and newsgroups to obscure spoilers, puzzles, or simple ciphers.
+ROT13 shifts the alphabet by 13 positions. Itâ€™s often used in forums and newsgroups to obscure spoilers, puzzles, or simple ciphers.
   Example:
 `
 echo "Uryyb Jbeyq" | tr 'A-Za-z' 'N-ZA-Mn-za-m' | sh
 `
+</details>
+
+<details>
+<summary>Base64Eval</summary>
+Combines Base64 encoding with the eval command to obfuscate and execute shell commands dynamically.
+
+The script is encoded using Base64 and then decoded and executed via eval, hiding the original command in the process.
+  Example:
+`
+echo "ZWNobyAnSGVsbG8gd29ybGQhJwo=" | base64 --decode | eval
+`
+This decodes the Base64 string and executes the command ` echo 'Hello world!' `.
+</details>
+
+<details>
+<summary>Eval</summary>
+eval is used to evaluate and execute a string as a shell command. It can be used for code obfuscation, often alongside Base64 encoding or other encoding techniques, to dynamically execute potentially hidden or obfuscated commands.
+
+The main risk is that eval can execute arbitrary code, making it a common tool for obfuscating code.
+  Example:
+`
+encoded="ZWNobyAnSGVsbG8gd29ybGQhJwo="
+decoded=$(echo $encoded | base64 --decode)
+eval $decoded
+`
+In this case, the Base64 string is decoded and then executed by eval, revealing and running the hidden command (echo 'Hello World').
 </details>
 
 ## Installation
