@@ -2,7 +2,7 @@
 # Unshell
 > The Script Kiddies Nightmare 👻
 
-Effortlessly deobfuscate shell scripts back into source code even with heavenly and multi layered obfuscation. Unshell will search/detect for patterns on shell script, determine and deobfuscate effectively.
+Effortlessly deobfuscate shell scripts back into source code, even with heavy multi-layered obfuscation. Unshell will detects patterns in shell scripts, determines obfuscation techniques, and effectively deobfuscates them. 
 
 ## Features
 - Zero configuration: There's no need for any configuration
@@ -19,7 +19,7 @@ eg: <code>/bin/sh -c "decrypted shell"</code>
 
 <details>
 <summary>Simple Script Compiler (SSC)</summary>
-It works almost the same as SHC but this one uses C++ and shell reads from file descriptor `3`. It is visible via `fd` number 3 on the process.
+Similar to SHC but uses C++. The shell script is read from file descriptor `3`, which can be accessed via `fd`.
 </details>
 
 <details>
@@ -29,7 +29,7 @@ Ri-crypt works internally called execve to shell, it decrypted at runtimes and v
 
 <details>
 <summary>bash-obfuscate (Node.js CLI)</summary>
-bash-obfuscate works by randomizing the script with random variables then executes it in the `eval` command.
+bash-obfuscate works by randomizing the script with random variable names and executing them via `eval`.  
 </details>
 
 <details>
@@ -39,8 +39,11 @@ Bashrock works almost the same way as bash-obfuscate.
 
 <details>
 <summary>TTP Tool</summary>
-The creator of this obfuscation said "it has anti-decode feature" despite "multi-layered Base64 encoding" and "hard-to-detect random lines" that he uses can easily be decoded.
-As of this writing, unshell supports up to version 23 of this "tool".
+It uses eval "$dec_1", variable (enc), random functions, random strings, random values, and multi-layered base64.
+The creator of this obfuscation said "it has anti-decode feature" despite of "multi-layered Base64 encoding" and "hard-to-detect random lines" that he uses can EASILY be decoded.
+As of this writing, unshell supports up to version 23 of this "tool". But, if it is the version 23, he adds a compare to check if there is any temp (or check sha256). If yes, it'll remove decode of the script, and say `echo "⚠️ Error: The file structure was changed 🤣."
+sleep 999999`.
+So you must decrypt it manually 🙃.
 </details>
 
 <details>
@@ -190,7 +193,7 @@ unshell - Deobfuscate any shell scripts with multiple methods for FREE!
     -r, --recursive [DIR]
       Recursively find and deobfuscate all shells in the specified directory
     -v, --verbose
-      Enable verbose mode (for debugging or troubleshooting
+      Enable verbose mode (for debugging or troubleshooting)
     -d, --execve-delay [SECOND]
       Set a custom execve delay in seconds (for SHC/SSC encryption)
     -U, --update
@@ -204,7 +207,7 @@ unshell - Deobfuscate any shell scripts with multiple methods for FREE!
 ```
 
 ## WARNING
-Using unshell to retrieve the original shell script from SHC, SSC, or Ri-crypt obfuscation could potentially harm your machine, these obfuscation type requires to executing the script to order to deobfuscate thus leave your machine in danger if script does something malicious. Avoid running unshell with ROOT permissions unless you fully trust the script!
+Using Unshell to deobfuscate SHC, SSC, or Ri-crypt scripts **may be dangerous** as these require executing the script to retrieve the original content. If the script contains malicious code, it could harm your system. **Do not run Unshell with ROOT privileges unless you fully trust the script!**
 
 ## Special Credits
 - [Rem01Gaming](https://github.com/Rem01Gaming/unshell) for the original repository.
