@@ -2,12 +2,12 @@
 # Unshell
 > The Script Kiddies Nightmare ðŸ‘»
 
-Effortlessly deobfuscate shell scripts back into source code even with heavenly and multi layered obfuscation. unshell will search for patterns on shell script, determine and deobfuscate accordingly.
+Effortlessly deobfuscate shell scripts back into source code even with heavenly and multi layered obfuscation. Unshell will search/detect for patterns on shell script, determine and deobfuscate effectively.
 
 ## Features
 - Zero configuration: There's no need for any configuration
 - Penetrate: Multi layered obfuscation is not a problem
-- Easy to use: just `unshell -f encrypted1.sh encrypted2.sh` in cmd (Terminals like termux, etc)
+- Easy to use: just `unshell -f encrypted1.sh encrypted2.sh` in cmd (Terminals like Termux)
 
 ## Supported Obfuscation Methods
 <details>
@@ -38,9 +38,9 @@ Bashrock works almost the same way as bash-obfuscate.
 </details>
 
 <details>
-<summary>TPP Tool</summary>
-The creator of this obfuscation said "it has anti-decode feature" despite multilayered base64 encoding that he uses can easily be decoded.
-As of this writing, unshell supports up to version 12 of this "tool".
+<summary>TTP Tool</summary>
+The creator of this obfuscation said "it has anti-decode feature" despite "multi-layered Base64 encoding" and "hard-to-detect random lines" that he uses can easily be decoded.
+As of this writing, unshell supports up to version 23 of this "tool".
 </details>
 
 <details>
@@ -178,7 +178,7 @@ chmod +x $spath/unshell
 
 ## Usage
 ```yaml
-unshell - Deobfuscate any shell scripts with multiple methods
+unshell - Deobfuscate any shell scripts with multiple methods for FREE!
   Usage: unshell [OPTIONS] [FILE]
   Usage: unshell [OPTIONS] [DIR]
 
@@ -188,7 +188,7 @@ unshell - Deobfuscate any shell scripts with multiple methods
     -f, --file [FILE]
       Specify script(s) to deobfuscate (supports multiple inputs)
     -r, --recursive [DIR]
-      Recursively find and deobfuscate shells in the specified directory
+      Recursively find and deobfuscate all shells in the specified directory
     -v, --verbose
       Enable verbose mode (for debugging or troubleshooting
     -d, --execve-delay [SECOND]
@@ -198,7 +198,7 @@ unshell - Deobfuscate any shell scripts with multiple methods
 
   Example usages:
     unshell -f install.sh menu.sh
-    unshell -v -f /system/bin/gaming_script.sg
+    unshell -v -f /system/bin/gaming_script.sh
     unshell -d 6.018 -f ./VTK
     unshell -r dir
 ```
