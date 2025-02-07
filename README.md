@@ -1,6 +1,6 @@
 ![unshell_hero](./unshell-banner.png)
 # Unshell
-> The Script Kiddies Nightmare ðŸ‘»
+> The Script Kiddies Nightmare 👻
 
 Effortlessly deobfuscate shell scripts back into source code even with heavenly and multi layered obfuscation. Unshell will search/detect for patterns on shell script, determine and deobfuscate effectively.
 
