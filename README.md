@@ -172,6 +172,48 @@ eval $decoded
 In this case, the Base64 string is decoded and then executed by eval, revealing and running the hidden command (echo 'Hello World').
 </details>
 
+
+<details>
+<summary>HTESS Python Encrypter</summary>
+HTESS Python Encrypter is a multi-layered obfuscation technique that combines Bash-obfuscation, Base64 encoding, and Hexadecimal conversion.
+
+How HTESS Python Encrypter Works:
+1. **Layer 1-2: Bash-Obfuscation**
+   - Uses `eval`, randomized variables, or other techniques to obscure the script.
+   - Before decryption, remove these markers:
+     ```bash
+     # Option encode/obfuscate: 1
+     # https://anotepad.com/notes/eabcnj39
+     ```
+
+2. **Layer 3-4: Base64 Encoding (Double Layer)**
+   - The script is encoded using **Base64 twice**.
+   - Before decryption, remove:
+     ```bash
+     sh -c "$(echo -e '
+     ' | base64 -d)"
+     # Option encode/obfuscate: 2
+     # https://anotepad.com/notes/eabcnj39
+     ```
+
+3. **Layer 5: Hexadecimal Encoding (xxd -r -p)**
+   - The final stage encrypts the script in **hexadecimal format** using `xxd -r -p`.
+   - Before decryption, remove:
+     ```bash
+     sh -c "$(echo -e '
+     ' | xxd -r -p)"
+     # Option encode/obfuscate: 4
+     # https://anotepad.com/notes/eabcnj39
+     ```
+
+HTESS Python Encrypter Decryption Process:
+- **Remove obfuscation markers**.
+- **Execute the de-obfuscated script to extract Base64 and Hex layers**.
+- **Decode Base64 twice**.
+- **Convert Hexadecimal to binary using `xxd -r -p`**.
+
+HTESS Python Encrypter follows a structured obfuscation method that can be reversed systematically using the above steps.
+</details>
 ## Installation
 ```shell
 spath=$(echo $PATH | cut -d: -f1)
