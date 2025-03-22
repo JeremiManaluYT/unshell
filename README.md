@@ -2,12 +2,12 @@
 # Unshell
 > The Script Kiddies Nightmare 👻
 
-Effortlessly deobfuscate shell scripts back into source code, even with heavy multi-layered obfuscation. Unshell will detects patterns in shell scripts, determines obfuscation techniques, and effectively deobfuscates them. 
+Effortlessly deobfuscate any shell scripts back into the source code, even with heavy multi-layered obfuscation. Unshell will detects patterns in shell scripts, determines obfuscation techniques, and effectively deobfuscates them. 
 
 ## Features
 - Zero configuration: There's no need for any configuration
 - Penetrate: Multi layered obfuscation is not a problem
-- Easy to use: just `unshell -f encrypted1.sh encrypted2.sh` in cmd (Terminals like Termux)
+- Easy to use: just type `unshell -f encrypted1.sh encrypted2.sh` in cmd (Terminals like Termux)
 
 ## Supported Obfuscation Methods
 <details>
@@ -214,6 +214,7 @@ HTESS Python Encrypter Decryption Process:
 
 HTESS Python Encrypter follows a structured obfuscation method that can be reversed systematically using the above steps.
 </details>
+
 ## Installation
 ```shell
 spath=$(echo $PATH | cut -d: -f1)
@@ -245,11 +246,11 @@ unshell - Deobfuscate any shell scripts with multiple methods for FREE!
     unshell -f install.sh menu.sh
     unshell -v -f /system/bin/gaming_script.sh
     unshell -d 6.018 -f ./VTK
-    unshell -r dir
+    unshell -r scripts
 ```
 
 ## WARNING
-Using Unshell to deobfuscate SHC, SSC, or Ri-crypt scripts **may be dangerous** as these require executing the script to retrieve the original content. If the script contains malicious code, it could harm your system. **Do not run Unshell with ROOT privileges unless you fully trust the script!**
+Using Unshell to deobfuscate SHC, SSC, or Ri-crypt scripts **may be dangerous** as these require executing the script to retrieve the original content. **IF** the script contains malicious code, **it could harm your system**. **Do not run Unshell with ROOT privileges unless you fully trust the script!**
 
 ## Special Credits
 - [Rem01Gaming](https://github.com/Rem01Gaming/unshell) for the original repository.
